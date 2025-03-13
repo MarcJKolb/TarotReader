@@ -44,7 +44,7 @@ image_base_url = "https://www.sacred-texts.com/tarot/pkt/img/"
 def get_card_image(card_name):
     """Fetch the Tarot card image from Sacred Texts using the specified filename structure."""
     words = card_name.split()
-    if card_name.startswith("The"):  # Major Arcana
+    if "The" in words or card_name in ["Justice", "Strength", "Judgement", "Death", "Temperance", "The Tower", "The Star", "The Moon", "The Sun", "The World"]:
         card_number = str(list(tarot_meanings.keys()).index(card_name)).zfill(2)
         image_filename = f"ar{card_number}.jpg"
     elif len(words) == 3 and words[1] == "of":  # Minor Arcana
