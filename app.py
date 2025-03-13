@@ -31,22 +31,26 @@ tarot_meanings = {
 }
 
 # Minor Arcana (Suit of Wands, Cups, Swords, and Pentacles)
-suits = ["Wands", "Cups", "Swords", "Pentacles"]
-values = [
-    "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-    "Page", "Knight", "Queen", "King"
-]
-for suit in suits:
-    for value in values:
-        tarot_meanings[f"{value} of {suit}"] = f"A detailed interpretation of the {value} of {suit} based on traditional and intuitive readings."
+suits = {"Wands": "wa", "Cups": "cu", "Swords": "sw", "Pentacles": "pe"}
+values = {
+    "Ace": "ac", "Two": "02", "Three": "03", "Four": "04", "Five": "05",
+    "Six": "06", "Seven": "07", "Eight": "08", "Nine": "09", "Ten": "10",
+    "Page": "pa", "Knight": "kn", "Queen": "qu", "King": "ki"
+}
 
 # Base URL for Tarot images from Sacred Texts
 image_base_url = "https://www.sacred-texts.com/tarot/pkt/img/"
 
 def get_card_image(card_name):
-    """Fetch the Tarot card image from Sacred Texts."""
-    formatted_name = card_name.lower().replace(" ", "").replace("of", "").replace("the", "")
-    image_filename = f"ar{formatted_name[:2]}.jpg" if formatted_name[:2].isdigit() else f"ar{formatted_name}.jpg"
+    """Fetch the Tarot card image from Sacred Texts using the specified filename structure."""
+    words = card_name.split()
+    if words[0] == "The":  # Major Arcana
+        card_number = str(list(tarot_meanings.keys()).index(card_name)).zfill(2)
+        image_filename = f"ar{card_number}.jpg"
+    else:  # Minor Arcana
+        suit = suits[words[-1]]
+        value = values[words[0]]
+        image_filename = f"{suit}{value}.jpg"
     return image_base_url + image_filename
 
 st.title("Tarot Reading App")
