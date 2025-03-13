@@ -79,7 +79,7 @@ spread_explanations = {
     ]
 }
 
-st.title("Tarot Reading App")
+st.title("Mystic Marc Telling Tarot")
 spread_choice = st.selectbox("Choose a Tarot Spread", list(spread_explanations.keys()))
 num_cards = len(spread_explanations[spread_choice])
 use_reversals = st.checkbox("Include Reversed Cards")
