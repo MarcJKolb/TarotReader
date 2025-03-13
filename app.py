@@ -4,49 +4,47 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import os
 
-# Tarot deck including Major and Minor Arcana (simplified for now)
-tarot_deck = {
-    "The Fool": "New beginnings, optimism, trust in life.",
-    "The Magician": "Action, the power to manifest.",
-    "The High Priestess": "Inaction, going within, the mystical.",
-    "The Empress": "Motherhood, fertility, nature.",
-    "The Emperor": "Fatherhood, leadership, stability.",
-    "The Hierophant": "Tradition, conformity, morality and ethics.",
-    "The Lovers": "Love, union, relationships, values alignment.",
-    "The Chariot": "Control, willpower, success, action, determination.",
-    "Strength": "Courage, subtle power, compassion, persuasion.",
-    "The Hermit": "Contemplation, search for truth, inner guidance.",
-    "Wheel of Fortune": "Change, cycles, fate, decisive moments.",
-    "Justice": "Fairness, truth, cause and effect, law.",
-    "The Hanged Man": "Sacrifice, release, martyrdom.",
-    "Death": "Endings, transformation, transition.",
-    "Temperance": "Balance, moderation, being sensible.",
-    "The Devil": "Destructive patterns, addiction, giving away power.",
-    "The Tower": "Sudden upheaval, broken pride, disaster.",
-    "The Star": "Hope, faith, rejuvenation.",
-    "The Moon": "Mystery, the subconscious, dreams.",
-    "The Sun": "Joy, success, celebration, positivity.",
-    "Judgement": "Reflection, reckoning, awakening.",
-    "The World": "Completion, wholeness, integration, travel."
-}
+# Load detailed Tarot meanings from a structured dataset
+def load_tarot_meanings():
+    return {
+        "The Fool": "Represents new beginnings, spontaneity, and free spirit.",
+        "The Magician": "Symbolizes power, resourcefulness, and inspired action.",
+        "The High Priestess": "Encourages intuition, mystery, and inner wisdom.",
+        "The Empress": "Represents nurturing, abundance, and femininity.",
+        "The Emperor": "Stands for authority, structure, and stability.",
+        "The Hierophant": "Symbolizes tradition, spiritual guidance, and wisdom.",
+        "The Lovers": "Reflects choices, harmony, and relationships.",
+        "The Chariot": "Signifies determination, control, and victory.",
+        "Strength": "Embodies courage, patience, and inner strength.",
+        "The Hermit": "Encourages soul-searching, introspection, and guidance.",
+        "Wheel of Fortune": "Symbolizes fate, change, and life cycles.",
+        "Justice": "Represents truth, fairness, and law.",
+        "The Hanged Man": "Denotes letting go, new perspectives, and sacrifice.",
+        "Death": "Symbolizes transformation, endings, and renewal.",
+        "Temperance": "Stands for balance, patience, and purpose.",
+        "The Devil": "Warns of addiction, materialism, and bondage.",
+        "The Tower": "Denotes sudden upheaval, chaos, and revelation.",
+        "The Star": "Represents hope, inspiration, and serenity.",
+        "The Moon": "Symbolizes illusion, fear, and subconscious mind.",
+        "The Sun": "Brings joy, success, and vitality.",
+        "Judgement": "Calls for reflection, reckoning, and awakening.",
+        "The World": "Marks completion, achievement, and travel."
+    }
 
-# Add Minor Arcana
-suits = ["Wands", "Cups", "Swords", "Pentacles"]
-values = ["Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Page", "Knight", "Queen", "King"]
-for suit in suits:
-    for value in values:
-        tarot_deck[f"{value} of {suit}"] = "A unique interpretation based on traditional meanings."
-
-# Available spreads
+# Available spreads with detailed placements and explanations
 spreads = {
-    "One Card Draw": {"positions": ["Card 1"], "layout": [(0.5, 0.5)], "explanation": ["A single card insight into your situation."]},
+    "One Card Draw": {
+        "positions": ["Card 1"],
+        "layout": [(0.5, 0.5)],
+        "explanation": ["A single card insight into your situation."]
+    },
     "Past-Present-Future": {
         "positions": ["Past", "Present", "Future"],
         "layout": [(0.3, 0.5), (0.5, 0.5), (0.7, 0.5)],
         "explanation": [
-            "Past: Influences that have shaped the situation.",
-            "Present: The current state and challenges.",
-            "Future: The direction in which things are headed."
+            "Past: Influences shaping the current situation.",
+            "Present: The present state and its challenges.",
+            "Future: The likely outcome based on the current trajectory."
         ]
     },
     "Celtic Cross": {
@@ -59,16 +57,16 @@ spreads = {
             (0.8, 0.8), (0.8, 0.6), (0.8, 0.4), (0.8, 0.2)
         ],
         "explanation": [
-            "Present: The current situation.",
-            "Challenge: The main obstacle or issue.",
-            "Past: Factors leading to the present.",
-            "Future: Likely developments.",
-            "Above: Conscious influences.",
-            "Below: Subconscious influences.",
-            "Advice: Guidance for action.",
-            "External Influences: Factors beyond control.",
-            "Hopes & Fears: Inner hopes or anxieties.",
-            "Outcome: The likely result."
+            "Present: Your current situation.",
+            "Challenge: Main obstacle or issue at hand.",
+            "Past: Key factors influencing the present.",
+            "Future: Possible developments.",
+            "Above: Conscious influences guiding you.",
+            "Below: Subconscious factors affecting the situation.",
+            "Advice: Suggested approach or wisdom.",
+            "External Influences: Outside forces impacting you.",
+            "Hopes & Fears: What you hope for or fear.",
+            "Outcome: The likely result of the situation."
         ]
     }
 }
@@ -85,9 +83,11 @@ st.title("Tarot Reading App")
 # Dropdown for spread selection
 spread_choice = st.selectbox("Choose a Tarot Spread", list(spreads.keys()))
 
+tarot_meanings = load_tarot_meanings()
+
 if st.button("Draw Cards"):
     spread = spreads[spread_choice]
-    drawn_cards = random.sample(list(tarot_deck.keys()), len(spread["positions"]))
+    drawn_cards = random.sample(list(tarot_meanings.keys()), len(spread["positions"]))
     
     st.subheader("Your Reading:")
     fig, ax = plt.subplots(figsize=(6, 4))
@@ -98,17 +98,16 @@ if st.button("Draw Cards"):
     
     for i, (card, pos, explanation) in enumerate(zip(drawn_cards, spread["layout"], spread["explanation"])):
         x, y = pos
-        ax.text(x, y, f"{spread['positions'][i]}\n{card}", ha='center', va='center', fontsize=10, bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5))
+        card_image = load_card_image(card)
+        
+        if card_image:
+            st.image(card_image, caption=f"{spread['positions'][i]}: {card}", use_column_width=True)
+        else:
+            ax.text(x, y, f"{spread['positions'][i]}\n{card}", ha='center', va='center', fontsize=10, bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5))
         
         st.write(f"**{spread['positions'][i]}: {card}**")
-        st.write(f"_Meaning_: {tarot_deck[card]}")
+        st.write(f"_Meaning_: {tarot_meanings[card]}")
         st.write(f"_Role_: {explanation}")
-        
-        # Display card image if available
-        card_image = load_card_image(card)
-        if card_image:
-            st.image(card_image, caption=card, use_column_width=True)
-        
         st.write("---")
     
     st.pyplot(fig)
