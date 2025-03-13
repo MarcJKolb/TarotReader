@@ -44,13 +44,19 @@ image_base_url = "https://www.sacred-texts.com/tarot/pkt/img/"
 def get_card_image(card_name):
     """Fetch the Tarot card image from Sacred Texts using the specified filename structure."""
     words = card_name.split()
-    if words[0] == "The":  # Major Arcana
+    if card_name.startswith("The"):  # Major Arcana
         card_number = str(list(tarot_meanings.keys()).index(card_name)).zfill(2)
         image_filename = f"ar{card_number}.jpg"
-    else:  # Minor Arcana
-        suit = suits[words[-1]]
-        value = values[words[0]]
-        image_filename = f"{suit}{value}.jpg"
+    elif len(words) == 3 and words[1] == "of":  # Minor Arcana
+        suit = suits.get(words[2], "")
+        value = values.get(words[0], "")
+        if suit and value:
+            image_filename = f"{suit}{value}.jpg"
+        else:
+            return None  # Return None if suit or value is missing
+    else:
+        return None  # Return None if unrecognized format
+    
     return image_base_url + image_filename
 
 st.title("Tarot Reading App")
@@ -62,7 +68,8 @@ if st.button("Draw Cards"):
         image_url = get_card_image(card)
         col1, col2 = st.columns([1, 2])
         with col1:
-            st.image(image_url, caption=card, use_container_width=True)
+            if image_url:
+                st.image(image_url, caption=card, use_container_width=True)
         with col2:
             st.write(f"**{card}**")
             st.write(f"_Meaning_: {tarot_meanings[card]}")
