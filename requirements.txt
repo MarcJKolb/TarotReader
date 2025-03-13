@@ -4,3 +4,4 @@ pillow
 random
 os
 rich
+numpy
