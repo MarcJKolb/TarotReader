@@ -2,88 +2,76 @@ import streamlit as st
 import random
 import matplotlib.pyplot as plt
 from PIL import Image
-import os
+import requests
+from io import BytesIO
 
-# Load detailed Tarot meanings from a structured dataset
-def load_tarot_meanings():
-    return {
-        "The Fool": "Represents new beginnings, spontaneity, and free spirit.",
-        "The Magician": "Symbolizes power, resourcefulness, and inspired action.",
-        "The High Priestess": "Encourages intuition, mystery, and inner wisdom.",
-        "The Empress": "Represents nurturing, abundance, and femininity.",
-        "The Emperor": "Stands for authority, structure, and stability.",
-        "The Hierophant": "Symbolizes tradition, spiritual guidance, and wisdom.",
-        "The Lovers": "Reflects choices, harmony, and relationships.",
-        "The Chariot": "Signifies determination, control, and victory.",
-        "Strength": "Embodies courage, patience, and inner strength.",
-        "The Hermit": "Encourages soul-searching, introspection, and guidance.",
-        "Wheel of Fortune": "Symbolizes fate, change, and life cycles.",
-        "Justice": "Represents truth, fairness, and law.",
-        "The Hanged Man": "Denotes letting go, new perspectives, and sacrifice.",
-        "Death": "Symbolizes transformation, endings, and renewal.",
-        "Temperance": "Stands for balance, patience, and purpose.",
-        "The Devil": "Warns of addiction, materialism, and bondage.",
-        "The Tower": "Denotes sudden upheaval, chaos, and revelation.",
-        "The Star": "Represents hope, inspiration, and serenity.",
-        "The Moon": "Symbolizes illusion, fear, and subconscious mind.",
-        "The Sun": "Brings joy, success, and vitality.",
-        "Judgement": "Calls for reflection, reckoning, and awakening.",
-        "The World": "Marks completion, achievement, and travel."
-    }
+# Tarot card meanings (expanded)
+tarot_meanings = {
+    "The Fool": "A leap of faith, embracing the unknown, fresh starts, and limitless potential.",
+    "The Magician": "Manifestation of goals, personal power, resourcefulness, and mastery.",
+    "The High Priestess": "Hidden knowledge, intuition, spiritual wisdom, and the subconscious.",
+    "The Empress": "Fertility, nurturing energy, abundance, creativity, and comfort.",
+    "The Emperor": "Structure, authority, discipline, stability, and protection.",
+    "The Hierophant": "Traditional wisdom, guidance, spiritual authority, and societal norms.",
+    "The Lovers": "Deep relationships, moral dilemmas, choices guided by the heart, and harmony.",
+    "The Chariot": "Victory through willpower, control over opposing forces, discipline, and ambition.",
+    "Strength": "Inner courage, emotional mastery, patience, and overcoming adversity.",
+    "The Hermit": "Seeking truth through solitude, introspection, wisdom, and guidance.",
+    "Wheel of Fortune": "Cycles of change, fate, unexpected shifts, and turning points.",
+    "Justice": "Balance, truth, accountability, fair decisions, and ethical clarity.",
+    "The Hanged Man": "A shift in perspective, surrender, patience, and enlightenment through sacrifice.",
+    "Death": "Transformation, the end of a phase, renewal, and necessary change.",
+    "Temperance": "Balance, moderation, blending elements for harmony, and self-restraint.",
+    "The Devil": "Bondage to materialism, addiction, toxic cycles, and illusions of control.",
+    "The Tower": "Sudden upheaval, breaking false foundations, radical change, and revelation.",
+    "The Star": "Hope, renewal, inspiration, and trusting in the universe’s guidance.",
+    "The Moon": "Illusions, subconscious fears, uncertainty, and deep emotions.",
+    "The Sun": "Joy, success, vitality, clarity, and celebration of life.",
+    "Judgement": "A moment of reckoning, self-reflection, rebirth, and awakening.",
+    "The World": "Completion, achieving goals, unity, wholeness, and fulfillment."
+}
 
-# Available spreads with detailed placements and explanations
+# Base URL for Tarot images from the Rider-Waite deck
+image_base_url = "https://www.sacred-texts.com/tarot/xr/i"
+
+def get_card_image(card_name):
+    """Fetch the Tarot card image from the online source."""
+    image_filename = card_name.lower().replace(" ", "") + ".jpg"
+    image_url = f"{image_base_url}/{image_filename}"
+    try:
+        response = requests.get(image_url)
+        if response.status_code == 200:
+            return Image.open(BytesIO(response.content))
+    except Exception as e:
+        return None
+    return None
+
+# Available spreads with positions
 spreads = {
     "One Card Draw": {
-        "positions": ["Card 1"],
-        "layout": [(0.5, 0.5)],
-        "explanation": ["A single card insight into your situation."]
+        "positions": ["Insight"],
+        "layout": [(0.5, 0.5)]
     },
     "Past-Present-Future": {
         "positions": ["Past", "Present", "Future"],
-        "layout": [(0.3, 0.5), (0.5, 0.5), (0.7, 0.5)],
-        "explanation": [
-            "Past: Influences shaping the current situation.",
-            "Present: The present state and its challenges.",
-            "Future: The likely outcome based on the current trajectory."
-        ]
+        "layout": [(0.3, 0.5), (0.5, 0.5), (0.7, 0.5)]
     },
     "Celtic Cross": {
         "positions": [
-            "Present", "Challenge", "Past", "Future", "Above", "Below",
-            "Advice", "External Influences", "Hopes & Fears", "Outcome"
+            "Present Situation", "Challenge", "Past Influences", "Future Outlook", "Conscious Goals", "Subconscious Influences",
+            "Advice", "External Influences", "Hopes & Fears", "Final Outcome"
         ],
         "layout": [
             (0.5, 0.5), (0.6, 0.5), (0.4, 0.5), (0.7, 0.5), (0.5, 0.7), (0.5, 0.3),
             (0.8, 0.8), (0.8, 0.6), (0.8, 0.4), (0.8, 0.2)
-        ],
-        "explanation": [
-            "Present: Your current situation.",
-            "Challenge: Main obstacle or issue at hand.",
-            "Past: Key factors influencing the present.",
-            "Future: Possible developments.",
-            "Above: Conscious influences guiding you.",
-            "Below: Subconscious factors affecting the situation.",
-            "Advice: Suggested approach or wisdom.",
-            "External Influences: Outside forces impacting you.",
-            "Hopes & Fears: What you hope for or fear.",
-            "Outcome: The likely result of the situation."
         ]
     }
 }
-
-def load_card_image(card_name):
-    """Loads a Tarot card image if available."""
-    filename = f"images/{card_name.replace(' ', '_')}.jpg"
-    if os.path.exists(filename):
-        return Image.open(filename)
-    return None
 
 st.title("Tarot Reading App")
 
 # Dropdown for spread selection
 spread_choice = st.selectbox("Choose a Tarot Spread", list(spreads.keys()))
-
-tarot_meanings = load_tarot_meanings()
 
 if st.button("Draw Cards"):
     spread = spreads[spread_choice]
@@ -96,9 +84,9 @@ if st.button("Draw Cards"):
     ax.set_xticks([])
     ax.set_yticks([])
     
-    for i, (card, pos, explanation) in enumerate(zip(drawn_cards, spread["layout"], spread["explanation"])):
+    for i, (card, pos) in enumerate(zip(drawn_cards, spread["layout"])):
         x, y = pos
-        card_image = load_card_image(card)
+        card_image = get_card_image(card)
         
         if card_image:
             st.image(card_image, caption=f"{spread['positions'][i]}: {card}", use_column_width=True)
@@ -107,7 +95,6 @@ if st.button("Draw Cards"):
         
         st.write(f"**{spread['positions'][i]}: {card}**")
         st.write(f"_Meaning_: {tarot_meanings[card]}")
-        st.write(f"_Role_: {explanation}")
         st.write("---")
     
     st.pyplot(fig)
