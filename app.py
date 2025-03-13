@@ -3,26 +3,6 @@ import random
 import requests
 from PIL import Image, ImageOps
 from io import BytesIO
-import base64
-
-# Function to set background
-def set_background(image_url):
-    response = requests.get(image_url)
-    if response.status_code == 200:
-        img_data = base64.b64encode(response.content).decode()
-        bg_image = f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/jpg;base64,{img_data}");
-            background-size: cover;
-            background-attachment: fixed;
-        }}
-        </style>
-        """
-        st.markdown(bg_image, unsafe_allow_html=True)
-
-# Set the background image
-set_background("https://wallpapercave.com/wp/wp1880497.jpg")
 
 # Expanded Tarot card meanings including Major and Minor Arcana
 tarot_meanings = {
@@ -96,9 +76,6 @@ spread_explanations = {
         "**External Influences:** People, events, or forces beyond the querent’s control.",
         "**Hopes & Fears:** What the querent longs for and what they fear may happen.",
         "**Final Outcome:** The projected result based on the present trajectory."
-    ],
-    "Yes/No Spread": [
-        "**Answer:** A single card drawn to provide insight into a yes-or-no question. Upright cards generally indicate 'Yes,' while reversed cards suggest 'No.' Additional nuances depend on the card's meaning and position."
     ]
 }
 
@@ -112,7 +89,15 @@ if st.button("Draw Cards"):
     
     for i, (card, reversed) in enumerate(drawn_cards):
         image = get_card_image(card, reversed)
-        st.image(image, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
-        st.write(f"**{spread_explanations[spread_choice][i]}**")
-        st.write(f"**{card}**")
-        st.write(tarot_meanings[card]["reversed" if reversed else "upright"])
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            if isinstance(image, Image.Image):
+                st.image(image, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
+            else:
+                st.image(image_base_url + image, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
+        with col2:
+            meaning_key = "reversed" if reversed else "upright"
+            st.write(f"**{spread_explanations[spread_choice][i]}**")
+            st.write(f"**{card}**")
+            st.write(tarot_meanings[card][meaning_key])
+        st.write("---")
