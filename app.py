@@ -76,6 +76,9 @@ spread_explanations = {
         "**External Influences:** People, events, or forces beyond the querent’s control.",
         "**Hopes & Fears:** What the querent longs for and what they fear may happen.",
         "**Final Outcome:** The projected result based on the present trajectory."
+    ],
+    "Yes/No Spread": [
+        "**Answer:** A single card drawn to provide insight into a yes-or-no question. Upright cards generally indicate 'Yes,' while reversed cards suggest 'No.' Additional nuances depend on the card's meaning and position."
     ]
 }
 
