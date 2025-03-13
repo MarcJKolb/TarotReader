@@ -78,23 +78,14 @@ if st.button("Draw Cards"):
     drawn_cards = random.sample(list(tarot_meanings.keys()), len(spread["positions"]))
     
     st.subheader("Your Reading:")
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    
-    for i, (card, pos) in enumerate(zip(drawn_cards, spread["layout"])):
-        x, y = pos
+    for i, card in enumerate(drawn_cards):
         card_image = get_card_image(card)
         
-        if card_image:
-            st.image(card_image, caption=f"{spread['positions'][i]}: {card}", use_column_width=True)
-        else:
-            ax.text(x, y, f"{spread['positions'][i]}\n{card}", ha='center', va='center', fontsize=10, bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5))
-        
-        st.write(f"**{spread['positions'][i]}: {card}**")
-        st.write(f"_Meaning_: {tarot_meanings[card]}")
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            if card_image:
+                st.image(card_image, caption=card, use_column_width=True)
+        with col2:
+            st.write(f"**{spread['positions'][i]}: {card}**")
+            st.write(f"_Meaning_: {tarot_meanings[card]}")
         st.write("---")
-    
-    st.pyplot(fig)
