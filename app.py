@@ -57,22 +57,17 @@ image_paths = {
     "The World": "f/ff/RWS_Tarot_21_World.jpg/300px-RWS_Tarot_21_World.jpg"
 }
 
-def get_card_image(card_name):
-    """Fetch the Tarot card image from Wikimedia Commons."""
-    if card_name in image_paths:
-        return image_base_url + image_paths[card_name]
-    return None
-
 st.title("Tarot Reading App")
 spread_choice = st.selectbox("Choose a Tarot Spread", ["One Card Draw", "Past-Present-Future", "Celtic Cross"])
+num_cards = 1 if spread_choice == "One Card Draw" else (3 if spread_choice == "Past-Present-Future" else 10)
 if st.button("Draw Cards"):
-    drawn_cards = random.sample(list(tarot_meanings.keys()), 3 if spread_choice == "Past-Present-Future" else 1)
+    drawn_cards = random.sample(list(tarot_meanings.keys()), num_cards)
     for card in drawn_cards:
-        image_url = get_card_image(card)
+        image_url = image_base_url + image_paths.get(card, "")
         col1, col2 = st.columns([1, 2])
         with col1:
             if image_url:
-                st.image(image_url, caption=card, use_column_width=True)
+                st.image(image_url, caption=card, use_container_width=True)
         with col2:
             st.write(f"**{card}**")
             st.write(f"_Meaning_: {tarot_meanings[card]}")
