@@ -1,8 +1,7 @@
 import streamlit as st
 import random
-import matplotlib.pyplot as plt
-from PIL import Image
 import requests
+from PIL import Image
 from io import BytesIO
 
 # Tarot card meanings (expanded)
@@ -31,61 +30,50 @@ tarot_meanings = {
     "The World": "Completion, achieving goals, unity, wholeness, and fulfillment."
 }
 
-# Base URL for Tarot images from the Rider-Waite deck
-image_base_url = "https://www.sacred-texts.com/tarot/xr/i"
-
-def get_card_image(card_name):
-    """Fetch the Tarot card image from the online source."""
-    image_filename = card_name.lower().replace(" ", "") + ".jpg"
-    image_url = f"{image_base_url}/{image_filename}"
-    try:
-        response = requests.get(image_url)
-        if response.status_code == 200:
-            return Image.open(BytesIO(response.content))
-    except Exception as e:
-        return None
-    return None
-
-# Available spreads with positions
-spreads = {
-    "One Card Draw": {
-        "positions": ["Insight"],
-        "layout": [(0.5, 0.5)]
-    },
-    "Past-Present-Future": {
-        "positions": ["Past", "Present", "Future"],
-        "layout": [(0.3, 0.5), (0.5, 0.5), (0.7, 0.5)]
-    },
-    "Celtic Cross": {
-        "positions": [
-            "Present Situation", "Challenge", "Past Influences", "Future Outlook", "Conscious Goals", "Subconscious Influences",
-            "Advice", "External Influences", "Hopes & Fears", "Final Outcome"
-        ],
-        "layout": [
-            (0.5, 0.5), (0.6, 0.5), (0.4, 0.5), (0.7, 0.5), (0.5, 0.7), (0.5, 0.3),
-            (0.8, 0.8), (0.8, 0.6), (0.8, 0.4), (0.8, 0.2)
-        ]
-    }
+# Base URL for Tarot images from Wikimedia Commons
+image_base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
+image_paths = {
+    "The Fool": "d/d7/RWS_Tarot_00_Fool.jpg/300px-RWS_Tarot_00_Fool.jpg",
+    "The Magician": "d/de/RWS_Tarot_01_Magician.jpg/300px-RWS_Tarot_01_Magician.jpg",
+    "The High Priestess": "8/88/RWS_Tarot_02_High_Priestess.jpg/300px-RWS_Tarot_02_High_Priestess.jpg",
+    "The Empress": "d/d2/RWS_Tarot_03_Empress.jpg/300px-RWS_Tarot_03_Empress.jpg",
+    "The Emperor": "c/c3/RWS_Tarot_04_Emperor.jpg/300px-RWS_Tarot_04_Emperor.jpg",
+    "The Hierophant": "8/8d/RWS_Tarot_05_Hierophant.jpg/300px-RWS_Tarot_05_Hierophant.jpg",
+    "The Lovers": "3/3a/TheLovers.jpg/300px-TheLovers.jpg",
+    "The Chariot": "9/9b/RWS_Tarot_07_Chariot.jpg/300px-RWS_Tarot_07_Chariot.jpg",
+    "Strength": "f/f5/RWS_Tarot_08_Strength.jpg/300px-RWS_Tarot_08_Strength.jpg",
+    "The Hermit": "4/4d/RWS_Tarot_09_Hermit.jpg/300px-RWS_Tarot_09_Hermit.jpg",
+    "Wheel of Fortune": "3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg/300px-RWS_Tarot_10_Wheel_of_Fortune.jpg",
+    "Justice": "e/e0/RWS_Tarot_11_Justice.jpg/300px-RWS_Tarot_11_Justice.jpg",
+    "The Hanged Man": "2/2b/RWS_Tarot_12_Hanged_Man.jpg/300px-RWS_Tarot_12_Hanged_Man.jpg",
+    "Death": "d/d7/RWS_Tarot_13_Death.jpg/300px-RWS_Tarot_13_Death.jpg",
+    "Temperance": "f/f8/RWS_Tarot_14_Temperance.jpg/300px-RWS_Tarot_14_Temperance.jpg",
+    "The Devil": "5/55/RWS_Tarot_15_Devil.jpg/300px-RWS_Tarot_15_Devil.jpg",
+    "The Tower": "5/53/RWS_Tarot_16_Tower.jpg/300px-RWS_Tarot_16_Tower.jpg",
+    "The Star": "d/db/RWS_Tarot_17_Star.jpg/300px-RWS_Tarot_17_Star.jpg",
+    "The Moon": "7/7f/RWS_Tarot_18_Moon.jpg/300px-RWS_Tarot_18_Moon.jpg",
+    "The Sun": "1/17/RWS_Tarot_19_Sun.jpg/300px-RWS_Tarot_19_Sun.jpg",
+    "Judgement": "d/dd/RWS_Tarot_20_Judgement.jpg/300px-RWS_Tarot_20_Judgement.jpg",
+    "The World": "f/ff/RWS_Tarot_21_World.jpg/300px-RWS_Tarot_21_World.jpg"
 }
 
+def get_card_image(card_name):
+    """Fetch the Tarot card image from Wikimedia Commons."""
+    if card_name in image_paths:
+        return image_base_url + image_paths[card_name]
+    return None
+
 st.title("Tarot Reading App")
-
-# Dropdown for spread selection
-spread_choice = st.selectbox("Choose a Tarot Spread", list(spreads.keys()))
-
+spread_choice = st.selectbox("Choose a Tarot Spread", ["One Card Draw", "Past-Present-Future", "Celtic Cross"])
 if st.button("Draw Cards"):
-    spread = spreads[spread_choice]
-    drawn_cards = random.sample(list(tarot_meanings.keys()), len(spread["positions"]))
-    
-    st.subheader("Your Reading:")
-    for i, card in enumerate(drawn_cards):
-        card_image = get_card_image(card)
-        
+    drawn_cards = random.sample(list(tarot_meanings.keys()), 3 if spread_choice == "Past-Present-Future" else 1)
+    for card in drawn_cards:
+        image_url = get_card_image(card)
         col1, col2 = st.columns([1, 2])
         with col1:
-            if card_image:
-                st.image(card_image, caption=card, use_column_width=True)
+            if image_url:
+                st.image(image_url, caption=card, use_column_width=True)
         with col2:
-            st.write(f"**{spread['positions'][i]}: {card}**")
+            st.write(f"**{card}**")
             st.write(f"_Meaning_: {tarot_meanings[card]}")
         st.write("---")
