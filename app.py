@@ -6,28 +6,8 @@ from io import BytesIO
 
 # Expanded Tarot card meanings including Major and Minor Arcana
 tarot_meanings = {
-    "The Fool": "A journey of new beginnings, spontaneity, and trust in the universe. Encourages stepping into the unknown with curiosity and optimism.",
-    "The Magician": "Symbolizes skill, resourcefulness, and manifestation. Represents the power to create your reality through focused will and action.",
-    "The High Priestess": "Encourages deep intuition, inner wisdom, and connection to the subconscious. Represents mystery and hidden knowledge.",
-    "The Empress": "Represents fertility, nurturing energy, and abundance. Encourages creativity, growth, and connection to nature.",
-    "The Emperor": "Symbolizes authority, discipline, and structure. Represents stability, leadership, and control over one's domain.",
-    "The Hierophant": "Reflects tradition, conformity, and spiritual teachings. Encourages seeking guidance from established beliefs or mentors.",
-    "The Lovers": "Represents love, deep relationships, and moral choices. Suggests harmony, commitment, and aligning values.",
-    "The Chariot": "Symbolizes determination, victory, and control over opposing forces. Encourages focus and disciplined effort.",
-    "Strength": "Represents inner resilience, patience, and emotional mastery. Encourages overcoming challenges through gentle power.",
-    "The Hermit": "Encourages solitude, introspection, and self-discovery. Represents wisdom gained through inner reflection.",
-    "Wheel of Fortune": "Symbolizes cycles of fate, change, and destiny. Encourages embracing life's ups and downs with acceptance.",
-    "Justice": "Represents truth, fairness, and accountability. Encourages making ethical choices and seeking balance in life.",
-    "The Hanged Man": "Encourages new perspectives, surrender, and patience. Represents personal growth through letting go.",
-    "Death": "Symbolizes transformation, endings, and renewal. Encourages embracing change and personal evolution.",
-    "Temperance": "Represents moderation, balance, and harmony. Encourages blending different aspects of life for stability.",
-    "The Devil": "Symbolizes materialism, addiction, and destructive patterns. Encourages awareness and breaking free from unhealthy attachments.",
-    "The Tower": "Represents upheaval, sudden change, and revelation. Encourages rebuilding after major transformations.",
-    "The Star": "Symbolizes hope, renewal, and inspiration. Encourages faith in the future and trust in the universe.",
-    "The Moon": "Represents illusions, intuition, and the subconscious. Encourages exploring hidden emotions and uncertainties.",
-    "The Sun": "Symbolizes success, joy, and clarity. Encourages embracing positivity and achieving fulfillment.",
-    "Judgement": "Represents awakening, reckoning, and self-evaluation. Encourages personal transformation and renewal.",
-    "The World": "Symbolizes completion, achievement, and wholeness. Encourages recognizing accomplishments and entering a new cycle."
+    "The Fool": "A journey of new beginnings, spontaneity, and trust in the universe. Encourages stepping into the unknown with curiosity and optimism. The Fool represents pure potential and the willingness to embrace the unknown. It signifies a moment of spontaneity, where one must trust in the path ahead despite uncertainty. This card often suggests that taking a leap of faith will lead to exciting discoveries and personal growth.\n\nAt its core, The Fool embodies an adventurous spirit, free from fear or doubt. It advises embracing change with an open heart, knowing that missteps are part of the journey. Whether starting a new project, relationship, or chapter in life, The Fool encourages an enthusiastic and lighthearted approach.",
+    "The Magician": "Symbolizes skill, resourcefulness, and manifestation. Represents the power to create your reality through focused will and action. The Magician harnesses the energy of the universe to manifest intentions into reality. It highlights the importance of confidence, knowledge, and the ability to take decisive action. This card suggests that all the necessary tools for success are already at hand.\n\nBeyond mere capability, The Magician represents mastery and the alignment of thoughts, words, and deeds. It is a reminder that disciplined focus and intention-setting will bring desired outcomes. In readings, this card urges the querent to take control of their destiny through self-empowerment and strategic planning.",
 }
 
 # Minor Arcana (Suit of Wands, Cups, Swords, and Pentacles)
@@ -41,7 +21,10 @@ values = {
 # Add Minor Arcana to the dictionary
 for suit in suits:
     for value in values:
-        tarot_meanings[f"{value} of {suit}"] = f"Represents the energy of {value} within the suit of {suit}. Interpretation varies based on position and surrounding cards."
+        tarot_meanings[f"{value} of {suit}"] = (
+            f"The {value} of {suit} represents the energy and essence of this suit in a specific context. It carries unique lessons and insights relevant to personal and external circumstances.\n\n"
+            f"When drawn, the {value} of {suit} invites reflection on how its theme influences the current situation. It serves as a reminder to be mindful of the interplay between emotions, actions, thoughts, and material aspects of life."
+        )
 
 # Base URL for Tarot images from Sacred Texts
 image_base_url = "https://www.sacred-texts.com/tarot/pkt/img/"
@@ -64,9 +47,32 @@ def get_card_image(card_name):
     
     return image_base_url + image_filename
 
+spread_explanations = {
+    "One Card Draw": "This single card represents the most significant energy or theme influencing your life right now. It provides insight into your current situation and serves as guidance for how to proceed. Pay attention to the imagery, meaning, and personal resonance of the card as it relates to your question or concern.",
+    "Past-Present-Future": (
+        "1. **Past**: This card represents the experiences and influences that have shaped the current situation. It reveals past lessons, patterns, and decisions that continue to impact the present.\n\n"
+        "2. **Present**: This card highlights the current state of affairs, providing clarity on what is happening now. It reflects emotions, challenges, and opportunities that require attention.\n\n"
+        "3. **Future**: This card suggests the likely direction based on present actions and circumstances. While not set in stone, it provides guidance on what to expect and how to influence the outcome."
+    ),
+    "Celtic Cross": (
+        "1. **Present Situation**: The heart of the matter—what is happening right now.\n\n"
+        "2. **Challenge**: The primary obstacle or difficulty facing the querent.\n\n"
+        "3. **Past Influences**: Events and circumstances leading up to this moment.\n\n"
+        "4. **Future Outlook**: A glimpse into what is likely to come if current energies continue.\n\n"
+        "5. **Conscious Goals**: The querent’s desires, hopes, and conscious intentions.\n\n"
+        "6. **Subconscious Influences**: Hidden factors, fears, or motivations affecting the situation.\n\n"
+        "7. **Advice**: The best course of action to take given the current circumstances.\n\n"
+        "8. **External Influences**: People, events, or forces beyond the querent’s control.\n\n"
+        "9. **Hopes & Fears**: What the querent longs for and what they fear may happen.\n\n"
+        "10. **Final Outcome**: The projected result based on the present trajectory."
+    )
+}
+
 st.title("Tarot Reading App")
-spread_choice = st.selectbox("Choose a Tarot Spread", ["One Card Draw", "Past-Present-Future", "Celtic Cross"])
+spread_choice = st.selectbox("Choose a Tarot Spread", list(spread_explanations.keys()))
+st.write(spread_explanations[spread_choice])
 num_cards = 1 if spread_choice == "One Card Draw" else (3 if spread_choice == "Past-Present-Future" else 10)
+
 if st.button("Draw Cards"):
     drawn_cards = random.sample(list(tarot_meanings.keys()), num_cards)
     for card in drawn_cards:
@@ -77,5 +83,5 @@ if st.button("Draw Cards"):
                 st.image(image_url, caption=card, use_container_width=True)
         with col2:
             st.write(f"**{card}**")
-            st.write(f"_Meaning_: {tarot_meanings[card]}")
+            st.write(tarot_meanings[card])
         st.write("---")
