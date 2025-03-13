@@ -1,6 +1,4 @@
 streamlit
-matplotlib
+requests
 pillow
-numpy
-rich
-os-sys
+random
