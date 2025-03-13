@@ -40,31 +40,14 @@ for suit in suits:
     for value in values:
         tarot_meanings[f"{value} of {suit}"] = f"A detailed interpretation of the {value} of {suit} based on traditional and intuitive readings."
 
-# Base URL for Tarot images from Wikimedia Commons
-image_base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
-backup_image_url = "https://example.com/backup_images/{}.jpg"  # Placeholder for future backups
-
-# Mapping of card names to image filenames
-image_paths = {
-    "The Sun": "1/17/RWS_Tarot_19_Sun.jpg/300px-RWS_Tarot_19_Sun.jpg",
-    "Judgement": "d/dd/RWS_Tarot_20_Judgement.jpg/300px-RWS_Tarot_20_Judgement.jpg",
-    "Temperance": "f/f8/RWS_Tarot_14_Temperance.jpg/300px-RWS_Tarot_14_Temperance.jpg",
-    "The Tower": "5/53/RWS_Tarot_16_Tower.jpg/300px-RWS_Tarot_16_Tower.jpg"
-}
-
-for card in tarot_meanings.keys():
-    formatted_name = card.replace(" ", "_").replace("of", "_of").lower()
-    if card not in image_paths:
-        image_paths[card] = f"d/d4/RWS_Tarot_{formatted_name}.jpg/300px-RWS_Tarot_{formatted_name}.jpg"
+# Base URL for Tarot images from Sacred Texts
+image_base_url = "https://www.sacred-texts.com/tarot/pkt/img/"
 
 def get_card_image(card_name):
-    """Fetch the Tarot card image from Wikimedia Commons, with a backup option."""
-    if card_name in image_paths:
-        image_url = image_base_url + image_paths[card_name]
-        response = requests.head(image_url)
-        if response.status_code == 200:
-            return image_url
-    return backup_image_url.format(card_name.replace(" ", "_"))
+    """Fetch the Tarot card image from Sacred Texts."""
+    formatted_name = card_name.lower().replace(" ", "").replace("of", "").replace("the", "")
+    image_filename = f"ar{formatted_name[:2]}.jpg" if formatted_name[:2].isdigit() else f"ar{formatted_name}.jpg"
+    return image_base_url + image_filename
 
 st.title("Tarot Reading App")
 spread_choice = st.selectbox("Choose a Tarot Spread", ["One Card Draw", "Past-Present-Future", "Celtic Cross"])
