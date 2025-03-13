@@ -51,7 +51,16 @@ def get_card_image(card_name, reversed):
     else:
         return None  # Return None if unrecognized format
     
-    return image_base_url + image_filename
+    image_url = image_base_url + image_filename
+    
+    response = requests.get(image_url)
+    if response.status_code == 200:
+        img = Image.open(BytesIO(response.content))
+        if reversed:
+            img = ImageOps.flip(img)  # Flip image upside down
+        return img
+    
+    return None
 
 spread_explanations = {
     "One Card Draw": 1,
@@ -68,10 +77,13 @@ if st.button("Draw Cards"):
     drawn_cards = [(card, random.choice([True, False]) if use_reversals else False) for card in random.sample(list(tarot_meanings.keys()), num_cards)]
     
     for card, reversed in drawn_cards:
-        image_url = get_card_image(card, reversed)
+        image = get_card_image(card, reversed)
         col1, col2 = st.columns([1, 2])
         with col1:
-            st.image(image_url, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
+            if isinstance(image, Image.Image):
+                st.image(image, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
+            else:
+                st.image(image_base_url + image, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
         with col2:
             meaning_key = "reversed" if reversed else "upright"
             st.write(f"**{card}**")
