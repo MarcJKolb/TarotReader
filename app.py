@@ -3,12 +3,44 @@ import random
 import requests
 from PIL import Image, ImageOps
 from io import BytesIO
+import base64
 
-# Expanded Tarot card meanings including Major and Minor Arcana
+# Function to set background
+def set_background(image_url):
+    response = requests.get(image_url)
+    if response.status_code == 200:
+        img_data = base64.b64encode(response.content).decode()
+        bg_image = f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{img_data}");
+            background-size: cover;
+            background-attachment: fixed;
+        }}
+        .title {{
+            color: lightblue;
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+        }}
+        </style>
+        """
+        st.markdown(bg_image, unsafe_allow_html=True)
+
+# Set the background image
+set_background("https://wallpapercave.com/wp/wp1880497.jpg")
+
+# Display the title
+st.markdown("<h1 class='title'>Mystic Marc's Tarot Telling</h1>", unsafe_allow_html=True)
+
+# Checkbox for including the Suit of Weird
+include_suit_of_weird = st.checkbox("Include the Suit of Weird")
+
+# Expanded Tarot card meanings including Major, Minor, and the Suit of Weird
 tarot_meanings = {
     "The Fool": {
-        "upright": "A journey of new beginnings, spontaneity, and trust in the universe. Encourages stepping into the unknown with curiosity and optimism. The Fool represents pure potential and the willingness to embrace the unknown. It signifies a moment of spontaneity, where one must trust in the path ahead despite uncertainty. This card often suggests that taking a leap of faith will lead to exciting discoveries and personal growth.\n\nAt its core, The Fool embodies an adventurous spirit, free from fear or doubt. It advises embracing change with an open heart, knowing that missteps are part of the journey. Whether starting a new project, relationship, or chapter in life, The Fool encourages an enthusiastic and lighthearted approach.",
-        "reversed": "A warning against recklessness and naivety. The reversed Fool suggests acting without thinking, which could lead to unnecessary risks and foolish mistakes. This card urges caution before taking leaps of faith.\n\nIt may also indicate hesitation or fear of stepping into the unknown. The reversed Fool can represent someone feeling stuck, afraid of making the wrong choice, or lacking confidence in their abilities."
+        "upright": "A journey of new beginnings, spontaneity, and trust in the universe. Encourages stepping into the unknown with curiosity and optimism.",
+        "reversed": "A warning against recklessness and naivety. Suggests hesitation or fear of stepping into the unknown."
     }
 }
 
@@ -20,34 +52,53 @@ values = {
     "Page": "pa", "Knight": "kn", "Queen": "qu", "King": "ki"
 }
 
-# Add Minor Arcana to the dictionary
-for suit in suits:
-    for value in values:
-        tarot_meanings[f"{value} of {suit}"] = {
-            "upright": f"The {value} of {suit} represents the energy and essence of this suit in a specific context. It carries unique lessons and insights relevant to personal and external circumstances.\n\nWhen drawn, the {value} of {suit} invites reflection on how its theme influences the current situation. It serves as a reminder to be mindful of the interplay between emotions, actions, thoughts, and material aspects of life.",
-            "reversed": f"The reversed {value} of {suit} represents blockages, delays, or misaligned energy in the suit's domain. It suggests resistance to lessons or challenges in emotional, mental, or material aspects of life.\n\nIt may indicate avoidance, denial, or an internal struggle with the themes of {suit}. This card urges awareness of where one’s energy is being restricted or misused."
+# The Suit of Weird
+if include_suit_of_weird:
+    suits["Weird"] = "wd"
+    weird_cards = {
+        "Ace": "The Unfathomable",
+        "Two": "The Doppelgänger",
+        "Three": "The Laughing Void",
+        "Four": "The Locked Room",
+        "Five": "The Teeth Collector",
+        "Six": "The Impossible Gift",
+        "Seven": "The Unreadable Text",
+        "Eight": "The Repeating Dream",
+        "Nine": "The Silent Choir",
+        "Ten": "The Collapse",
+        "Page": "The Fool with Too Many Eyes",
+        "Knight": "The Masked Wanderer",
+        "Queen": "The Whispering Woman",
+        "King": "The Architect of the Impossible"
+    }
+    for value, name in weird_cards.items():
+        tarot_meanings[f"{value} of Weird"] = {
+            "upright": f"{name}: This card represents an eerie encounter with the unknown. It suggests that something beyond understanding is influencing the situation.\n\nIt may indicate an opportunity to embrace absurdity and the inexplicable, or it could serve as a warning that reality is shifting in ways that defy logic.",
+            "reversed": f"{name} (Reversed): This card warns against obsession with the unknowable. The querent may be seeking answers in places where none exist.\n\nAlternatively, the reversed meaning can indicate clinging to rationality in a situation that demands a leap of intuition or surrender to chaos."
         }
 
-# Base URL for Tarot images from Sacred Texts
+# Base URL for Tarot images from Sacred Texts and Suit of Weird placeholders
 image_base_url = "https://www.sacred-texts.com/tarot/pkt/img/"
+weird_image_base_url = "https://github.com/user/weird_tarot_images/"
 
 def get_card_image(card_name, reversed):
-    """Fetch the Tarot card image from Sacred Texts using the specified filename structure and rotate if reversed."""
+    """Fetch the Tarot card image and rotate if reversed."""
     words = card_name.split()
-    if "The" in words or card_name in ["Justice", "Strength", "Judgement", "Death", "Temperance", "The Tower", "The Star", "The Moon", "The Sun", "The World"]:
-        card_number = str(list(tarot_meanings.keys()).index(card_name)).zfill(2)
-        image_filename = f"ar{card_number}.jpg"
-    elif len(words) == 3 and words[1] == "of":  # Minor Arcana
-        suit = suits.get(words[2], "")
-        value = values.get(words[0], "")
-        if suit and value:
-            image_filename = f"{suit}{value}.jpg"
-        else:
-            return None  # Return None if suit or value is missing
+    if "Weird" in words:
+        image_url = f"{weird_image_base_url}{card_name.replace(' ', '_').lower()}.jpg"
     else:
-        return None  # Return None if unrecognized format
-    
-    image_url = image_base_url + image_filename
+        if "The" in words or card_name in ["Justice", "Strength", "Judgement", "Death", "Temperance", "The Tower", "The Star", "The Moon", "The Sun", "The World"]:
+            card_number = str(list(tarot_meanings.keys()).index(card_name)).zfill(2)
+            image_url = f"{image_base_url}ar{card_number}.jpg"
+        elif len(words) == 3 and words[1] == "of":  # Minor Arcana
+            suit = suits.get(words[2], "")
+            value = values.get(words[0], "")
+            if suit and value:
+                image_url = f"{image_base_url}{suit}{value}.jpg"
+            else:
+                return None
+        else:
+            return None
     
     response = requests.get(image_url)
     if response.status_code == 200:
@@ -76,28 +127,8 @@ spread_explanations = {
         "**External Influences:** People, events, or forces beyond the querent’s control.",
         "**Hopes & Fears:** What the querent longs for and what they fear may happen.",
         "**Final Outcome:** The projected result based on the present trajectory."
+    ],
+    "Yes/No Spread": [
+        "**Answer:** A single card drawn to provide insight into a yes-or-no question. Upright cards generally indicate 'Yes,' while reversed cards suggest 'No.' Additional nuances depend on the card's meaning and position."
     ]
 }
-
-st.title("Mystic Marc Telling Tarot")
-spread_choice = st.selectbox("Choose a Tarot Spread", list(spread_explanations.keys()))
-num_cards = len(spread_explanations[spread_choice])
-use_reversals = st.checkbox("Include Reversed Cards")
-
-if st.button("Draw Cards"):
-    drawn_cards = [(card, random.choice([True, False]) if use_reversals else False) for card in random.sample(list(tarot_meanings.keys()), num_cards)]
-    
-    for i, (card, reversed) in enumerate(drawn_cards):
-        image = get_card_image(card, reversed)
-        col1, col2 = st.columns([1, 2])
-        with col1:
-            if isinstance(image, Image.Image):
-                st.image(image, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
-            else:
-                st.image(image_base_url + image, caption=f"{card} (Reversed)" if reversed else card, use_container_width=True)
-        with col2:
-            meaning_key = "reversed" if reversed else "upright"
-            st.write(f"**{spread_explanations[spread_choice][i]}**")
-            st.write(f"**{card}**")
-            st.write(tarot_meanings[card][meaning_key])
-        st.write("---")
