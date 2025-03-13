@@ -49,9 +49,9 @@ image_paths = {
     "The Tower": "5/53/RWS_Tarot_16_Tower.jpg/300px-RWS_Tarot_16_Tower.jpg"
 }
 for card in tarot_meanings.keys():
-    formatted_name = card.replace(" ", "_").replace("of", "of_").lower()
+    formatted_name = card.replace(" ", "_").replace("of", "_of").lower()
     if card not in image_paths:
-        image_paths[card] = f"{formatted_name}.jpg/300px-{formatted_name}.jpg"
+        image_paths[card] = f"d/d4/RWS_Tarot_{formatted_name}.jpg/300px-RWS_Tarot_{formatted_name}.jpg"
 
 def get_card_image(card_name):
     """Fetch the Tarot card image from Wikimedia Commons."""
