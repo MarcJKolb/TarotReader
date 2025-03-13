@@ -3,35 +3,9 @@ import random
 import requests
 from PIL import Image, ImageOps
 from io import BytesIO
-import base64
-
-# Function to set background
-def set_background(image_url):
-    response = requests.get(image_url)
-    if response.status_code == 200:
-        img_data = base64.b64encode(response.content).decode()
-        bg_image = f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/jpg;base64,{img_data}");
-            background-size: cover;
-            background-attachment: fixed;
-        }}
-        .title {{
-            color: lightblue;
-            text-align: center;
-            font-size: 40px;
-            font-weight: bold;
-        }}
-        </style>
-        """
-        st.markdown(bg_image, unsafe_allow_html=True)
-
-# Set the background image
-set_background("https://wallpapercave.com/wp/wp1880497.jpg")
 
 # Display the title
-st.markdown("<h1 class='title'>Mystic Marc's Tarot Telling</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: lightblue;'>Mystic Marc's Tarot Telling</h1>", unsafe_allow_html=True)
 
 # Checkbox for including the Suit of Weird
 include_suit_of_weird = st.checkbox("Include the Suit of Weird")
@@ -73,8 +47,8 @@ if include_suit_of_weird:
     }
     for value, name in weird_cards.items():
         tarot_meanings[f"{value} of Weird"] = {
-            "upright": f"{name}: This card represents an eerie encounter with the unknown. It suggests that something beyond understanding is influencing the situation.\n\nIt may indicate an opportunity to embrace absurdity and the inexplicable, or it could serve as a warning that reality is shifting in ways that defy logic.",
-            "reversed": f"{name} (Reversed): This card warns against obsession with the unknowable. The querent may be seeking answers in places where none exist.\n\nAlternatively, the reversed meaning can indicate clinging to rationality in a situation that demands a leap of intuition or surrender to chaos."
+            "upright": f"{name}: This card represents an eerie encounter with the unknown. It suggests that something beyond understanding is influencing the situation.",
+            "reversed": f"{name} (Reversed): This card warns against obsession with the unknowable. The querent may be seeking answers in places where none exist."
         }
 
 # Base URL for Tarot images from Sacred Texts and Suit of Weird placeholders
