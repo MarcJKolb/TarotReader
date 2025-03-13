@@ -7,7 +7,7 @@ from io import BytesIO
 # Expanded Tarot card meanings including Major and Minor Arcana
 tarot_meanings = {
     "The Fool": "A journey of new beginnings, spontaneity, and trust in the universe. Encourages stepping into the unknown with curiosity and optimism. The Fool represents pure potential and the willingness to embrace the unknown. It signifies a moment of spontaneity, where one must trust in the path ahead despite uncertainty. This card often suggests that taking a leap of faith will lead to exciting discoveries and personal growth.\n\nAt its core, The Fool embodies an adventurous spirit, free from fear or doubt. It advises embracing change with an open heart, knowing that missteps are part of the journey. Whether starting a new project, relationship, or chapter in life, The Fool encourages an enthusiastic and lighthearted approach.",
-    "The Magician": "Symbolizes skill, resourcefulness, and manifestation. Represents the power to create your reality through focused will and action. The Magician harnesses the energy of the universe to manifest intentions into reality. It highlights the importance of confidence, knowledge, and the ability to take decisive action. This card suggests that all the necessary tools for success are already at hand.\n\nBeyond mere capability, The Magician represents mastery and the alignment of thoughts, words, and deeds. It is a reminder that disciplined focus and intention-setting will bring desired outcomes. In readings, this card urges the querent to take control of their destiny through self-empowerment and strategic planning.",
+    "The Magician": "Symbolizes skill, resourcefulness, and manifestation. Represents the power to create your reality through focused will and action. The Magician harnesses the energy of the universe to manifest intentions into reality. It highlights the importance of confidence, knowledge, and the ability to take decisive action. This card suggests that all the necessary tools for success are already at hand.\n\nBeyond mere capability, The Magician represents mastery and the alignment of thoughts, words, and deeds. It is a reminder that disciplined focus and intention-setting will bring desired outcomes. In readings, this card urges the querent to take control of their destiny through self-empowerment and strategic planning."
 }
 
 # Minor Arcana (Suit of Wands, Cups, Swords, and Pentacles)
@@ -48,40 +48,40 @@ def get_card_image(card_name):
     return image_base_url + image_filename
 
 spread_explanations = {
-    "One Card Draw": "This single card represents the most significant energy or theme influencing your life right now. It provides insight into your current situation and serves as guidance for how to proceed. Pay attention to the imagery, meaning, and personal resonance of the card as it relates to your question or concern.",
-    "Past-Present-Future": (
-        "1. **Past**: This card represents the experiences and influences that have shaped the current situation. It reveals past lessons, patterns, and decisions that continue to impact the present.\n\n"
-        "2. **Present**: This card highlights the current state of affairs, providing clarity on what is happening now. It reflects emotions, challenges, and opportunities that require attention.\n\n"
-        "3. **Future**: This card suggests the likely direction based on present actions and circumstances. While not set in stone, it provides guidance on what to expect and how to influence the outcome."
-    ),
-    "Celtic Cross": (
-        "1. **Present Situation**: The heart of the matter—what is happening right now.\n\n"
-        "2. **Challenge**: The primary obstacle or difficulty facing the querent.\n\n"
-        "3. **Past Influences**: Events and circumstances leading up to this moment.\n\n"
-        "4. **Future Outlook**: A glimpse into what is likely to come if current energies continue.\n\n"
-        "5. **Conscious Goals**: The querent’s desires, hopes, and conscious intentions.\n\n"
-        "6. **Subconscious Influences**: Hidden factors, fears, or motivations affecting the situation.\n\n"
-        "7. **Advice**: The best course of action to take given the current circumstances.\n\n"
-        "8. **External Influences**: People, events, or forces beyond the querent’s control.\n\n"
-        "9. **Hopes & Fears**: What the querent longs for and what they fear may happen.\n\n"
-        "10. **Final Outcome**: The projected result based on the present trajectory."
-    )
+    "One Card Draw": ["The single card represents the most significant energy or theme influencing your life right now. It provides insight into your current situation and serves as guidance for how to proceed."],
+    "Past-Present-Future": [
+        "**Past:** This card represents the experiences and influences that have shaped the current situation. It reveals past lessons, patterns, and decisions that continue to impact the present.",
+        "**Present:** This card highlights the current state of affairs, providing clarity on what is happening now. It reflects emotions, challenges, and opportunities that require attention.",
+        "**Future:** This card suggests the likely direction based on present actions and circumstances. While not set in stone, it provides guidance on what to expect and how to influence the outcome."
+    ],
+    "Celtic Cross": [
+        "**Present Situation:** The heart of the matter—what is happening right now.",
+        "**Challenge:** The primary obstacle or difficulty facing the querent.",
+        "**Past Influences:** Events and circumstances leading up to this moment.",
+        "**Future Outlook:** A glimpse into what is likely to come if current energies continue.",
+        "**Conscious Goals:** The querent’s desires, hopes, and conscious intentions.",
+        "**Subconscious Influences:** Hidden factors, fears, or motivations affecting the situation.",
+        "**Advice:** The best course of action to take given the current circumstances.",
+        "**External Influences:** People, events, or forces beyond the querent’s control.",
+        "**Hopes & Fears:** What the querent longs for and what they fear may happen.",
+        "**Final Outcome:** The projected result based on the present trajectory."
+    ]
 }
 
 st.title("Tarot Reading App")
 spread_choice = st.selectbox("Choose a Tarot Spread", list(spread_explanations.keys()))
-st.write(spread_explanations[spread_choice])
-num_cards = 1 if spread_choice == "One Card Draw" else (3 if spread_choice == "Past-Present-Future" else 10)
+num_cards = len(spread_explanations[spread_choice])
 
 if st.button("Draw Cards"):
     drawn_cards = random.sample(list(tarot_meanings.keys()), num_cards)
-    for card in drawn_cards:
+    for i, card in enumerate(drawn_cards):
         image_url = get_card_image(card)
         col1, col2 = st.columns([1, 2])
         with col1:
             if image_url:
                 st.image(image_url, caption=card, use_container_width=True)
         with col2:
+            st.write(f"**{spread_explanations[spread_choice][i]}**")
             st.write(f"**{card}**")
             st.write(tarot_meanings[card])
         st.write("---")
