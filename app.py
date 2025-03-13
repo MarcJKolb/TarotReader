@@ -65,14 +65,17 @@ if include_suit_of_weird:
             "reversed": f"{name} (Reversed): This card warns against obsession with the unknowable. The querent may be seeking answers in places where none exist."
         }
 
-# Draw cards and determine if they are reversed
+# Ensure that there are enough cards to sample from
 all_cards = list(tarot_meanings.keys())
-drawn_cards = [(card, random.choice([True, False]) if use_reversals else False) for card in random.sample(all_cards, num_cards)]
-
-# Button to draw cards
-if st.button("Draw Cards"):
-    for card, reversed in drawn_cards:
-        meaning_key = "reversed" if reversed else "upright"
-        st.write(f"**{card} ({'Reversed' if reversed else 'Upright'})**")
-        st.write(tarot_meanings[card][meaning_key])
-        st.write("---")
+if num_cards > len(all_cards):
+    st.error("Not enough cards available for this spread. Please check your settings.")
+else:
+    # Button to draw cards
+    if st.button("Draw Cards"):
+        drawn_cards = [(card, random.choice([True, False]) if use_reversals else False) for card in random.sample(all_cards, num_cards)]
+        
+        for card, reversed in drawn_cards:
+            meaning_key = "reversed" if reversed else "upright"
+            st.write(f"**{card} ({'Reversed' if reversed else 'Upright'})**")
+            st.write(tarot_meanings[card][meaning_key])
+            st.write("---")
