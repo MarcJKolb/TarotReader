@@ -40,14 +40,17 @@ for suit in suits:
     for value in values:
         tarot_meanings[f"{value} of {suit}"] = f"A detailed interpretation of the {value} of {suit} based on traditional and intuitive readings."
 
-# Base URL for Tarot images from Wikimedia Commons
-image_base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
+# Corrected Base URL for Tarot images from Wikimedia Commons
+image_base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb"
+image_suffix = "/300px-RWS_Tarot_{}.jpg"
+
 
 def get_card_image(card_name):
     """Fetch the Tarot card image from Wikimedia Commons."""
-    formatted_name = card_name.replace(" ", "_").replace("of", "_of").lower()
-    image_filename = formatted_name + ".jpg/300px-" + formatted_name + ".jpg"
-    return image_base_url + image_filename
+    formatted_name = card_name.replace(" ", "_").replace("of", "of_").lower()
+    image_filename = image_suffix.format(formatted_name)
+    return f"{image_base_url}{image_filename}"
+
 
 st.title("Tarot Reading App")
 spread_choice = st.selectbox("Choose a Tarot Spread", ["One Card Draw", "Past-Present-Future", "Celtic Cross"])
