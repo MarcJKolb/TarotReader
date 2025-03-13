@@ -45,9 +45,9 @@ image_base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
 
 def get_card_image(card_name):
     """Fetch the Tarot card image from Wikimedia Commons."""
-    formatted_name = card_name.replace(" ", "_").replace("of", "of_").lower()
-    image_url = f"{image_base_url}/{formatted_name}.jpg"
-    return image_url
+    formatted_name = card_name.replace(" ", "_").replace("of", "_of").lower()
+    image_filename = formatted_name + ".jpg/300px-" + formatted_name + ".jpg"
+    return image_base_url + image_filename
 
 st.title("Tarot Reading App")
 spread_choice = st.selectbox("Choose a Tarot Spread", ["One Card Draw", "Past-Present-Future", "Celtic Cross"])
@@ -58,8 +58,7 @@ if st.button("Draw Cards"):
         image_url = get_card_image(card)
         col1, col2 = st.columns([1, 2])
         with col1:
-            if image_url:
-                st.image(image_url, caption=card, use_container_width=True)
+            st.image(image_url, caption=card, use_container_width=True)
         with col2:
             st.write(f"**{card}**")
             st.write(f"_Meaning_: {tarot_meanings[card]}")
