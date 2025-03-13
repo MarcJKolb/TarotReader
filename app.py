@@ -30,25 +30,31 @@ tarot_meanings = {
     "The World": "Completion, achieving goals, unity, wholeness, and fulfillment. You have reached a significant milestone in your journey."
 }
 
-# Minor Arcana (Suit of Wands, Cups, Swords, and Pentacles)
-suits = ["Wands", "Cups", "Swords", "Pentacles"]
-values = [
-    "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-    "Page", "Knight", "Queen", "King"
-]
-for suit in suits:
-    for value in values:
-        tarot_meanings[f"{value} of {suit}"] = f"A detailed interpretation of the {value} of {suit} based on traditional and intuitive readings."
-
-# Corrected Base URL for Tarot images from Wikimedia Commons
-image_base_url = "https://upload.wikimedia.org/wikipedia/commons/"
+# Base URL for Tarot images from Wikimedia Commons
+image_base_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/"
+image_paths = {
+    "The Fool": "d/d7/RWS_Tarot_00_Fool.jpg/300px-RWS_Tarot_00_Fool.jpg",
+    "The Magician": "d/de/RWS_Tarot_01_Magician.jpg/300px-RWS_Tarot_01_Magician.jpg",
+    "The High Priestess": "8/88/RWS_Tarot_02_High_Priestess.jpg/300px-RWS_Tarot_02_High_Priestess.jpg",
+    "The Empress": "d/d2/RWS_Tarot_03_Empress.jpg/300px-RWS_Tarot_03_Empress.jpg",
+    "The Emperor": "c/c3/RWS_Tarot_04_Emperor.jpg/300px-RWS_Tarot_04_Emperor.jpg",
+    "The Hierophant": "8/8d/RWS_Tarot_05_Hierophant.jpg/300px-RWS_Tarot_05_Hierophant.jpg",
+    "The Lovers": "3/3a/TheLovers.jpg/300px-TheLovers.jpg",
+    "The Chariot": "9/9b/RWS_Tarot_07_Chariot.jpg/300px-RWS_Tarot_07_Chariot.jpg",
+    "Strength": "f/f5/RWS_Tarot_08_Strength.jpg/300px-RWS_Tarot_08_Strength.jpg",
+    "The Hermit": "4/4d/RWS_Tarot_09_Hermit.jpg/300px-RWS_Tarot_09_Hermit.jpg",
+    "Wheel of Fortune": "3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg/300px-RWS_Tarot_10_Wheel_of_Fortune.jpg",
+    "Justice": "e/e0/RWS_Tarot_11_Justice.jpg/300px-RWS_Tarot_11_Justice.jpg",
+    "The Hanged Man": "2/2b/RWS_Tarot_12_Hanged_Man.jpg/300px-RWS_Tarot_12_Hanged_Man.jpg",
+    "Death": "d/d7/RWS_Tarot_13_Death.jpg/300px-RWS_Tarot_13_Death.jpg",
+    "The Star": "d/db/RWS_Tarot_17_Star.jpg/300px-RWS_Tarot_17_Star.jpg"
+}
 
 def get_card_image(card_name):
     """Fetch the Tarot card image from Wikimedia Commons."""
-    formatted_name = card_name.replace(" ", "_").replace("of", "of_").lower()
-    image_filename = f"{formatted_name}.jpg"
-    image_url = f"{image_base_url}{image_filename}"
-    return image_url
+    if card_name in image_paths:
+        return image_base_url + image_paths[card_name]
+    return None
 
 st.title("Tarot Reading App")
 spread_choice = st.selectbox("Choose a Tarot Spread", ["One Card Draw", "Past-Present-Future", "Celtic Cross"])
@@ -59,7 +65,8 @@ if st.button("Draw Cards"):
         image_url = get_card_image(card)
         col1, col2 = st.columns([1, 2])
         with col1:
-            st.image(image_url, caption=card, use_container_width=True)
+            if image_url:
+                st.image(image_url, caption=card, use_container_width=True)
         with col2:
             st.write(f"**{card}**")
             st.write(f"_Meaning_: {tarot_meanings[card]}")
