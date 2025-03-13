@@ -4,30 +4,30 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-# Expanded Tarot card meanings including Minor Arcana
+# Expanded Tarot card meanings including Major and Minor Arcana
 tarot_meanings = {
-    "The Fool": "A leap of faith, embracing the unknown, fresh starts, and limitless potential. Trust your instincts and take a bold step forward.",
-    "The Magician": "Manifestation of goals, personal power, resourcefulness, and mastery. You have all the tools to create your desired reality.",
-    "The High Priestess": "Hidden knowledge, intuition, spiritual wisdom, and the subconscious. Trust your inner voice and seek deeper truths.",
-    "The Empress": "Fertility, nurturing energy, abundance, creativity, and comfort. Connect with nature and embrace self-care.",
-    "The Emperor": "Structure, authority, discipline, stability, and protection. Take control of your circumstances and establish order.",
-    "The Hierophant": "Traditional wisdom, guidance, spiritual authority, and societal norms. Learn from a mentor or follow conventional wisdom.",
-    "The Lovers": "Deep relationships, moral dilemmas, choices guided by the heart, and harmony. A major decision about love or values is at hand.",
-    "The Chariot": "Victory through willpower, control over opposing forces, discipline, and ambition. Stay focused and push forward with determination.",
-    "Strength": "Inner courage, emotional mastery, patience, and overcoming adversity. True strength comes from inner peace and resilience.",
-    "The Hermit": "Seeking truth through solitude, introspection, wisdom, and guidance. Take time alone to find answers within yourself.",
-    "Wheel of Fortune": "Cycles of change, fate, unexpected shifts, and turning points. Life is in motion—embrace new opportunities.",
-    "Justice": "Balance, truth, accountability, fair decisions, and ethical clarity. Seek honesty and fairness in all dealings.",
-    "The Hanged Man": "A shift in perspective, surrender, patience, and enlightenment through sacrifice. Let go of control to gain insight.",
-    "Death": "Transformation, the end of a phase, renewal, and necessary change. Embrace the new by releasing the old.",
-    "Temperance": "Balance, moderation, blending elements for harmony, and self-restraint. Take a measured approach to life’s challenges.",
-    "The Devil": "Bondage to materialism, addiction, toxic cycles, and illusions of control. Recognize and break free from negative patterns.",
-    "The Tower": "Sudden upheaval, breaking false foundations, radical change, and revelation. Accept transformation even when it’s painful.",
-    "The Star": "Hope, renewal, inspiration, and trusting in the universe’s guidance. Remain optimistic and have faith in your path.",
-    "The Moon": "Illusions, subconscious fears, uncertainty, and deep emotions. Things are not as they seem—trust your intuition.",
-    "The Sun": "Joy, success, vitality, clarity, and celebration of life. Happiness and clarity shine upon you.",
-    "Judgement": "A moment of reckoning, self-reflection, rebirth, and awakening. Make peace with the past and move forward.",
-    "The World": "Completion, achieving goals, unity, wholeness, and fulfillment. You have reached a significant milestone in your journey."
+    "The Fool": "A journey of new beginnings, spontaneity, and trust in the universe. Encourages stepping into the unknown with curiosity and optimism.",
+    "The Magician": "Symbolizes skill, resourcefulness, and manifestation. Represents the power to create your reality through focused will and action.",
+    "The High Priestess": "Encourages deep intuition, inner wisdom, and connection to the subconscious. Represents mystery and hidden knowledge.",
+    "The Empress": "Represents fertility, nurturing energy, and abundance. Encourages creativity, growth, and connection to nature.",
+    "The Emperor": "Symbolizes authority, discipline, and structure. Represents stability, leadership, and control over one's domain.",
+    "The Hierophant": "Reflects tradition, conformity, and spiritual teachings. Encourages seeking guidance from established beliefs or mentors.",
+    "The Lovers": "Represents love, deep relationships, and moral choices. Suggests harmony, commitment, and aligning values.",
+    "The Chariot": "Symbolizes determination, victory, and control over opposing forces. Encourages focus and disciplined effort.",
+    "Strength": "Represents inner resilience, patience, and emotional mastery. Encourages overcoming challenges through gentle power.",
+    "The Hermit": "Encourages solitude, introspection, and self-discovery. Represents wisdom gained through inner reflection.",
+    "Wheel of Fortune": "Symbolizes cycles of fate, change, and destiny. Encourages embracing life's ups and downs with acceptance.",
+    "Justice": "Represents truth, fairness, and accountability. Encourages making ethical choices and seeking balance in life.",
+    "The Hanged Man": "Encourages new perspectives, surrender, and patience. Represents personal growth through letting go.",
+    "Death": "Symbolizes transformation, endings, and renewal. Encourages embracing change and personal evolution.",
+    "Temperance": "Represents moderation, balance, and harmony. Encourages blending different aspects of life for stability.",
+    "The Devil": "Symbolizes materialism, addiction, and destructive patterns. Encourages awareness and breaking free from unhealthy attachments.",
+    "The Tower": "Represents upheaval, sudden change, and revelation. Encourages rebuilding after major transformations.",
+    "The Star": "Symbolizes hope, renewal, and inspiration. Encourages faith in the future and trust in the universe.",
+    "The Moon": "Represents illusions, intuition, and the subconscious. Encourages exploring hidden emotions and uncertainties.",
+    "The Sun": "Symbolizes success, joy, and clarity. Encourages embracing positivity and achieving fulfillment.",
+    "Judgement": "Represents awakening, reckoning, and self-evaluation. Encourages personal transformation and renewal.",
+    "The World": "Symbolizes completion, achievement, and wholeness. Encourages recognizing accomplishments and entering a new cycle."
 }
 
 # Minor Arcana (Suit of Wands, Cups, Swords, and Pentacles)
@@ -37,6 +37,11 @@ values = {
     "Six": "06", "Seven": "07", "Eight": "08", "Nine": "09", "Ten": "10",
     "Page": "pa", "Knight": "kn", "Queen": "qu", "King": "ki"
 }
+
+# Add Minor Arcana to the dictionary
+for suit in suits:
+    for value in values:
+        tarot_meanings[f"{value} of {suit}"] = f"Represents the energy of {value} within the suit of {suit}. Interpretation varies based on position and surrounding cards."
 
 # Base URL for Tarot images from Sacred Texts
 image_base_url = "https://www.sacred-texts.com/tarot/pkt/img/"
